@@ -13,6 +13,8 @@ def extract_messages_of_week(file_path: str, start_date: datetime, end_date: dat
 
     messages = []
     for line in text:
+
+        # padrão para identificar a msg de alguém que malhou
         match = re.search(r'\d{2}/\d{2}/\d{4}', line)
         if match:
             message_date = datetime.strptime(match.group(0), '%d/%m/%Y')
@@ -22,10 +24,16 @@ def extract_messages_of_week(file_path: str, start_date: datetime, end_date: dat
     return messages
 
 
-def parse_sectors_of_messages(messages : List) -> Dict:
+def create_dict_sector2count(messages : List) -> Dict:
     sector_and_count = {}
     for index, message in enumerate(messages):
+
+        # padrão para extrair núcleo: quantidade de malhações
+
+        # 10/05/2023 10:07 - Moisés: #nut +2
         match = re.search(r'#?(\w{3})\s*\+(\d)', message)
+
+        # 10/05/2023 10:07 - Moisés: +2 #nut
         match_2 = re.search(r'\+(\d)\s*#?(\w{3})', message)
         if match:
             sector = match.group(1)
@@ -68,7 +76,7 @@ if __name__ == '__main__':
 
     messages_of_week = extract_messages_of_week(file_path, start_date, end_date)
 
-    sector_and_count = parse_sectors_of_messages(messages_of_week)
+    sector_and_count = create_dict_sector2count(messages_of_week)
 
     show_results_in_txt(sector_and_count)
     ...
