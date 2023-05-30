@@ -3,12 +3,12 @@ from datetime import datetime, timedelta
 from typing import Dict, List
 
 
-def extract_messages_of_week(file_path: str, start_date: datetime, end_date: datetime):
+def extract_messages_of_week(input_file_path: str, start_date: datetime, end_date: datetime):
     """
 
     :type end_date: datetime
     """
-    with open(file_path, 'r', encoding='utf-8') as file:
+    with open(input_file_path, 'r', encoding='utf-8') as file:
         text = file.readlines()
 
     messages = []
@@ -24,7 +24,7 @@ def extract_messages_of_week(file_path: str, start_date: datetime, end_date: dat
     return messages
 
 
-def create_dict_sector2count(messages : List) -> Dict:
+def create_dict_sector2count(messages: List) -> Dict:
     sector_and_count = {}
     for index, message in enumerate(messages):
 
@@ -50,7 +50,7 @@ def create_dict_sector2count(messages : List) -> Dict:
     return sector_and_count
 
 
-def show_results_in_txt(sector_and_count: Dict):
+def show_results_in_txt(sector_and_count: Dict, output_file_path: str):
     sector_and_count_sorted_by_count = dict(sorted(sector_and_count.items(),
                                                    key=lambda item: item[1],
                                                    reverse=True))
@@ -59,7 +59,7 @@ def show_results_in_txt(sector_and_count: Dict):
     sorted_value_key_pairs = sorted(value_key_pairs, reverse=True)
     sector_and_count_sorted_by_count = {k: v for v, k in sorted_value_key_pairs}
 
-    with open('./assets/results_16_05.txt', 'w', encoding='utf-8') as file:
+    with open(output_file_path, 'w', encoding='utf-8') as file:
         file.write('FOCA FIT SEMANAL\n')
         for rank, sector_count in enumerate(sector_and_count_sorted_by_count.items()):
             sector = sector_count[0]
@@ -68,17 +68,20 @@ def show_results_in_txt(sector_and_count: Dict):
 
 
 if __name__ == '__main__':
-    file_path = './assets/chat_16_05.txt'
-    today = datetime.strptime('15/05/2023', '%d/%m/%Y')
+    input_file_path = './assets/input/chat_15_05.txt'
+    output_file_path = './assets/output/results_15_05.txt'
+    dia_de_fazer_contagem = '15/05/2023'
+    today = datetime.strptime(dia_de_fazer_contagem, '%d/%m/%Y')
     # today = datetime.now()
+
     start_date = today - timedelta(days=7)
     end_date = today - timedelta(days=1)
 
-    messages_of_week = extract_messages_of_week(file_path, start_date, end_date)
+    messages_of_week = extract_messages_of_week(input_file_path, start_date, end_date)
 
     sector_and_count = create_dict_sector2count(messages_of_week)
 
-    show_results_in_txt(sector_and_count)
+    show_results_in_txt(sector_and_count, output_file_path)
 
     print("Relatório gerado com sucesso e salvo em assets/results_16_05.txt")
 
@@ -93,5 +96,5 @@ if __name__ == '__main__':
     #     print(message)
     # start_date = datetime(2023, 05, 14)
     # end_date = datetime(2020, 12, 31)
-    # messages = extract_messages_of_week('chat_16_05.txt', start_date, end_date)
+    # messages = extract_messages_of_week('chat_15_05.txt', start_date, end_date)
     # print(messages)
