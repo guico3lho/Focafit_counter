@@ -83,7 +83,7 @@ if __name__ == '__main__':
 
     show_results_in_txt(sector_and_count, output_file_path)
 
-    print("Relatório gerado com sucesso e salvo em assets/results_16_05.txt")
+    print("Relatório gerado com sucesso e salvo em assets")
 
     # Now lets count
     # if the sector is NUT, I will search for the string "#NOE +\d"
