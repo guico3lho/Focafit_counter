@@ -59,7 +59,7 @@ def show_results_in_txt(sector_and_count: Dict):
     sorted_value_key_pairs = sorted(value_key_pairs, reverse=True)
     sector_and_count_sorted_by_count = {k: v for v, k in sorted_value_key_pairs}
 
-    with open('../assets/results_16_05.txt', 'w', encoding='utf-8') as file:
+    with open('./assets/results_16_05.txt', 'w', encoding='utf-8') as file:
         file.write('FOCA FIT SEMANAL\n')
         for rank, sector_count in enumerate(sector_and_count_sorted_by_count.items()):
             sector = sector_count[0]
@@ -68,7 +68,7 @@ def show_results_in_txt(sector_and_count: Dict):
 
 
 if __name__ == '__main__':
-    file_path = '../assets/chat_16_05.txt'
+    file_path = './assets/chat_16_05.txt'
     today = datetime.strptime('15/05/2023', '%d/%m/%Y')
     # today = datetime.now()
     start_date = today - timedelta(days=7)
@@ -79,7 +79,8 @@ if __name__ == '__main__':
     sector_and_count = create_dict_sector2count(messages_of_week)
 
     show_results_in_txt(sector_and_count)
-    ...
+
+    print("Relatório gerado com sucesso e salvo em assets/results_16_05.txt")
 
     # Now lets count
     # if the sector is NUT, I will search for the string "#NOE +\d"
