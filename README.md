@@ -5,7 +5,7 @@
 ## The project was made using:
 - PyCharm with Jupyter Notebook
 - Anaconda
-- Python 3.10.19
+- Python 3.10.9
 - Windows 10+
 - All packages used are listed in the `requirements.txt` file
 
