@@ -15,3 +15,9 @@
 - `src` folder contains the code the Focafit coounter uses to work
 - `requirements.txt` file contains the dependecies of the project
 - `.runAndDebugOnPyCharm` folder contains configuration to Run/Debug project on Pycharm
+
+## Running on your machine
+- Clone the repository
+- Inside `Focafit_counter` directory:
+    - Install the dependencies using `pip install -r requirements.txt`
+    - run `python -m src.counter` to run the Focafit counter!
