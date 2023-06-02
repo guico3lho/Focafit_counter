@@ -1,7 +1,8 @@
+from os import path
 import re
 from datetime import datetime, timedelta
 from typing import Dict, List
-
+from argparse import ArgumentParser
 
 def extract_messages_of_week(input_file_path: str, start_date: datetime, end_date: datetime):
     """
@@ -49,10 +50,12 @@ def create_dict_sector2count(messages: List) -> Dict:
     return sector_and_count
 
 
-def show_results_in_txt(sector_and_count: Dict, output_file_path: str):
+def show_results_in_txt(sector_and_count: Dict, output_directory_path: str):
     sector_and_count_sorted_by_count = dict(sorted(sector_and_count.items(),
                                                    key=lambda item: item[1],
                                                    reverse=True))
+
+    output_file_path = path.join(output_directory_path, 'results.txt')
 
     with open(output_file_path, 'w', encoding='utf-8') as file:
         file.write('FOCA FIT SEMANAL\n')
@@ -63,11 +66,17 @@ def show_results_in_txt(sector_and_count: Dict, output_file_path: str):
 
 
 if __name__ == '__main__':
-    input_file_path = './assets/input/chat_15_05.txt'
-    output_file_path = './assets/output/results_15_05.txt'
-    dia_de_fazer_contagem = '15/05/2023'
-    today = datetime.strptime(dia_de_fazer_contagem, '%d/%m/%Y')
-    # today = datetime.now()
+
+    parser = ArgumentParser()
+    parser.add_argument('-i', '--input_file_path', type=str, default='./assets/input/chat.txt', dest='input_file_path')
+    parser.add_argument('-o', '--output_directory_path', type=str, default='./assets/output', dest='output_directory_path')
+    parser.add_argument('-d', '--dia_da_contagem', type=str, default=datetime.now().strftime('%d/%m/%Y'), dest='dia_da_contagem')
+    args = parser.parse_args()
+
+    input_file_path = args.input_file_path
+    output_directory_path = args.output_directory_path
+    dia_da_contagem = args.dia_da_contagem
+    today = datetime.strptime(dia_da_contagem, '%d/%m/%Y')
 
     start_date = today - timedelta(days=7)
     end_date = today - timedelta(days=1)
@@ -76,20 +85,7 @@ if __name__ == '__main__':
 
     sector_and_count = create_dict_sector2count(messages_of_week)
 
-    show_results_in_txt(sector_and_count, output_file_path)
+    show_results_in_txt(sector_and_count, output_directory_path)
 
-    print("Relatório gerado com sucesso e salvo em assets")
+    print(f"Relatório gerado com sucesso e salvo em {output_directory_path}")
 
-    # Now lets count
-    # if the sector is NUT, I will search for the string "#NOE +\d"
-    # if the sector is BOPE, I will search for the string "#BOPE +\d"
-    # if the sector is NOE, I will search for the string "#NOE +\d"
-    # if the sector is NDP, I will search for the string "#NDP +\d"
-    # if the sector is NIP, I will search for the string "#NIP +\d"
-
-    # for message in messages_of_week:
-    #     print(message)
-    # start_date = datetime(2023, 05, 14)
-    # end_date = datetime(2020, 12, 31)
-    # messages = extract_messages_of_week('chat_15_05.txt', start_date, end_date)
-    # print(messages)
