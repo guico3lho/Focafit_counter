@@ -54,10 +54,6 @@ def show_results_in_txt(sector_and_count: Dict, output_file_path: str):
                                                    key=lambda item: item[1],
                                                    reverse=True))
 
-    value_key_pairs = ((value, key) for (key, value) in sector_and_count_sorted_by_count.items())
-    sorted_value_key_pairs = sorted(value_key_pairs, reverse=True)
-    sector_and_count_sorted_by_count = {k: v for v, k in sorted_value_key_pairs}
-
     with open(output_file_path, 'w', encoding='utf-8') as file:
         file.write('FOCA FIT SEMANAL\n')
         for rank, sector_count in enumerate(sector_and_count_sorted_by_count.items()):
