@@ -5,7 +5,6 @@
 ## Project Overview
 
 - `assets` folder contains the input and output of the project
-- `notebooks` folder contains experiment and test purpose code only
 - `src` folder contains the code the Focafit coounter uses to work
 - `requirements.txt` file contains the dependecies of the project
 - `.runAndDebugOnPyCharm` folder contains configuration to Run/Debug project on Pycharm

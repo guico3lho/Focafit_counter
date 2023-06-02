@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 .idea
 assets/input/*.txt
+notebooks
 # C extensions
 *.so
 
