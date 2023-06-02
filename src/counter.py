@@ -26,15 +26,14 @@ def extract_messages_of_week(input_file_path: str, start_date: datetime, end_dat
 
 def create_dict_sector2count(messages: List) -> Dict:
     sector_and_count = {}
-    for index, message in enumerate(messages):
-
+    for message in messages:
         # padrão para extrair núcleo: quantidade de malhações
 
         # 10/05/2023 10:07 - Moisés: #nut +2
-        match = re.search(r'#?(\w{3})\s*\+(\d)', message)
+        match = re.search(r'#?(\w{3}\w?)\s*\+(\d*)', message)
 
         # 10/05/2023 10:07 - Moisés: +2 #nut
-        match_2 = re.search(r'\+(\d)\s*#?(\w{3})', message)
+        match_2 = re.search(r'\+(\d*)\s*#?(\w{3}\w?)', message)
         if match:
             sector = match.group(1)
             count = match.group(2)
