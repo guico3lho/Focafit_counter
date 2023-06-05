@@ -35,7 +35,7 @@ def create_dict_sector2count(messages: List) -> Dict:
         count_match = re.search(r'\+(\d*)', message_text) # ex: +2, +10
 
         if sector_match and count_match:
-            sector = sector_match.group(1)
+            sector = sector_match.group(1).lower()
             count = count_match.group(1)
         else:
             continue
