@@ -31,4 +31,12 @@
   - `"-i"` to specify the input file (format: path, type: str)
   - `"-o"` to specify the output file (format: path, type: str)
   - `"-d"` to specify the date the counting will be made (format: "dd/mm/yyyy", type: str)
-  - Run `python -m src.counter -i "./assets/input/chat_18_05.txt" -o "./assets/output" -d "15/06/2023"` to run an example of the Focafit_counter!
+  - Run `python -m src.counter -i "./assets/input/chat_example.txt" -o "./assets/output" -d "15/05/2023"` to run an example of the Focafit_counter!
+  - The result can be checked inside `./assets/output` folder
+  - The expected result is:
+```
+FOCA FIT SEMANAL
+1ª NOE: 8
+2ª NUT: 4
+3ª NDP: 2
+```
