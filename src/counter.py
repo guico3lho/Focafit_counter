@@ -32,8 +32,8 @@ def create_dict_sector2count(messages: List) -> Dict:
         # Pega o corpo da mensagem depois dos dois pontos
         message_text = "".join(message.split(':')[2:]).strip()
 
-        sector_match = re.search(r'#(\w{3}\w?)', message_text) # ex: #nip, #bope
-        count_match = re.search(r'\+(\d*)', message_text) # ex: +2, +10
+        sector_match = re.search(r'#(\w{3,4})', message_text) # ex: #nip, #bope
+        count_match = re.search(r'\+(\d+)', message_text) # ex: +2, +10
 
         if sector_match and count_match:
             sector = sector_match.group(1).lower()
