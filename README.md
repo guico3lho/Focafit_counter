@@ -17,11 +17,18 @@
 - Windows 10+
 - All packages used are listed in the `requirements.txt` file
 
-## Running on your machine
+## Setting environment
 
 - Clone the repository
 - Inside `Focafit_counter` directory:
-  - Install the dependencies using `pip install -r requirements.txt`
-  - Add the exported file from Whatsapp in the folder `assets/input`
-  - Modify `input_file_path` variable in `src/counter.py` to point to the chat file
-  - run `python -m src.counter` to run the Focafit counter!
+  - Install the dependencies using `pip install -r requirements.txt`;
+  - Add the exported txt file from Whatsapp into `assets/input` folder.
+
+
+## Running the code
+- This project uses `argparse` library
+- Currently, there are 3 arguments:
+  - `"-i"` to specify the input file (format: path, type: str)
+  - `"-o"` to specify the output file (format: path, type: str)
+  - `"-d"` to specify the date the counting will be made (format: "dd/mm/yyyy", type: str)
+  - Run `python -m src.counter -i "./assets/input/chat_18_05.txt" -o "./assets/output" -d "15/06/2023"` to run an example of the Focafit_counter!
