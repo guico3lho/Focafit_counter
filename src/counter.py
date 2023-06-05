@@ -15,7 +15,7 @@ def extract_messages_of_week(input_file_path: str, start_date: datetime, end_dat
     messages = []
     for line in text:
 
-        # padrão para identificar a msg de alguém que malhou
+        # padrão para identificar o dia da mensagem
         match = re.search(r'\d{2}/\d{2}/\d{4}', line)
         if match:
             message_date = datetime.strptime(match.group(0), '%d/%m/%Y')
@@ -28,19 +28,16 @@ def extract_messages_of_week(input_file_path: str, start_date: datetime, end_dat
 def create_dict_sector2count(messages: List) -> Dict:
     sector_and_count = {}
     for message in messages:
-        # padrão para extrair núcleo: quantidade de malhações
 
-        # 10/05/2023 10:07 - Moisés: #nut +2
-        match = re.search(r'#?(\w{3}\w?)\s*\+(\d*)', message)
+        # Pega o corpo da mensagem depois dos dois pontos
+        message_text = "".join(message.split(':')[2:]).strip()
 
-        # 10/05/2023 10:07 - Moisés: +2 #nut
-        match_2 = re.search(r'\+(\d*)\s*#?(\w{3}\w?)', message)
-        if match:
-            sector = match.group(1)
-            count = match.group(2)
-        elif match_2:
-            sector = match_2.group(2)
-            count = match_2.group(1)
+        sector_match = re.search(r'#(\w{3}\w?)', message_text) # ex: #nip, #bope
+        count_match = re.search(r'\+(\d*)', message_text) # ex: +2, +10
+
+        if sector_match and count_match:
+            sector = sector_match.group(1).lower()
+            count = count_match.group(1)
         else:
             continue
         if sector in sector_and_count:
