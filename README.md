@@ -35,8 +35,20 @@
   - The result can be checked inside `./assets/output` folder
   - The expected result is:
 ```
-FOCA FIT SEMANAL
-1ª NOE: 8
-2ª NUT: 4
-3ª NDP: 2
+🦾 FOCA FIT SEMANAL - 08/05 A 14/05 🦾 
+Gerado por: Focafit_counter 😎 
+
+💜💙🖤 RANKING POR NÚCLEO 💚🧡💛 
+
+1ª BOPE: 40
+2ª NOE: 6
+3ª NUT: 4
+4ª NDP: 2
+
+
+🏆 RANKING POR PESSOA 🏆
+
+1º Chico: 4
+2º Zeca: 2
+
 ```
