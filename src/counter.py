@@ -26,9 +26,30 @@ def extract_messages_of_week(input_file_path: str, start_date: datetime, end_dat
     return messages
 
 
+def get_name_from_message(message_text: str):
+
+    message_without_count = re.sub(r'\+(\d+)', '', message_text) # removes +4
+    cleaned_message = re.sub(r'#(\w{3,4})', '', message_without_count).strip() # removes #noe
+
+    # Se só tiver uma palavra, essa palavra é o nome
+    message_words = cleaned_message.split(' ')
+    if len(message_words) == 1:
+        name = message_words[0]
+    else:
+        # Se tiver mais de uma palavra, pega as palavras que começam com letra maiúscula e junta
+        capitalized_words = re.findall(r'\b[A-Z][^A-Z ]+\b', cleaned_message)  # ex: Chico Buarque
+        name = ' '.join(capitalized_words)
+
+        # Se tiver mais de uma palavra mas nenhuma começar com letra maiúscula, pega a primeira palavra
+        if not name:
+            name = message_words[0]
+
+    return name.title()
+
+
 def create_dict_sector2count(messages: List) -> Tuple[Dict, Dict]:
     sector_and_count = {}
-    nick_and_count = {}
+    name_and_count = {}
 
     for message in messages:
 
@@ -43,9 +64,6 @@ def create_dict_sector2count(messages: List) -> Tuple[Dict, Dict]:
             sector = sector_match.group(1).lower()
             count = count_match.group(1)
 
-            # re.search char address map is (36, 37, 38, 39) => (N, O, E, END) if message_text contains '#NOE'
-            nick_match = re.search(r'\b[A-Z][^A-Z ]+\b', message_text)  # ex: Chico
-
             if sector in sector_and_count:
                 sector_and_count[sector] += int(count)
 
@@ -54,25 +72,27 @@ def create_dict_sector2count(messages: List) -> Tuple[Dict, Dict]:
 
             # caso message_text possua sector e count mas não tenha nome, sector pontua mas a pessoa não.
             # pontuação para o núcleo será considerada mas não será atribuída a nenhum jogador
-            if nick_match:
-                nick = nick_match.group(0)
-                if nick in nick_and_count:
-                    nick_and_count[nick] += int(count)
+            name = get_name_from_message(message_text)
+            if name:
+                if name in name_and_count:
+                    name_and_count[name] += int(count)
                 else:
-                    nick_and_count[nick] = int(count)
+                    name_and_count[name] = int(count)
+            else:
+                print(f'Mensagem sem nome: {message}')
         else:
             continue
 
-    return (sector_and_count, nick_and_count)
+    return sector_and_count, name_and_count
 
 
-def show_results_in_txt(sector_and_count: Dict, nick_and_count, output_directory_path: str, start_date: datetime,
+def save_results_file(sector_and_count: Dict, name_and_count, output_directory_path: str, start_date: datetime,
                         end_date: datetime):
     sector_and_count_sorted_by_count = dict(sorted(sector_and_count.items(),
                                                    key=lambda item: item[1],
                                                    reverse=True))
 
-    nick_and_count_sorted_by_count = dict(sorted(nick_and_count.items(),
+    name_and_count_sorted_by_count = dict(sorted(name_and_count.items(),
                                                  key=lambda item: item[1],
                                                  reverse=True))
 
@@ -80,10 +100,10 @@ def show_results_in_txt(sector_and_count: Dict, nick_and_count, output_directory
 
     with open(output_file_path, 'w', encoding='utf-8') as file:
 
-        start_date_formated = start_date.strftime('%d/%m')
-        end_date_formated = end_date.strftime('%d/%m')
+        start_date_formatted = start_date.strftime('%d/%m')
+        end_date_formatted = end_date.strftime('%d/%m')
 
-        file.write(f'🦾 FOCA FIT SEMANAL - {start_date_formated} A {end_date_formated} 🦾 \n')
+        file.write(f'🦾 FOCA FIT SEMANAL - {start_date_formatted} A {end_date_formatted} 🦾 \n')
         file.write('Gerado por: Focafit_counter 😎 \n\n')
 
         file.write('💜💙🖤 RANKING POR NÚCLEO 💚🧡💛 \n\n')
@@ -91,15 +111,15 @@ def show_results_in_txt(sector_and_count: Dict, nick_and_count, output_directory
         for rank, sector_count in enumerate(sector_and_count_sorted_by_count.items()):
             sector = sector_count[0]
             count = sector_count[1]
-            file.write(f'{rank + 1}ª {sector.upper()}: {count}\n')
+            file.write(f'{rank + 1}º {sector.upper()}: {count}\n')
 
         file.write('\n\n')
 
         file.write('🏆 RANKING POR PESSOA 🏆\n\n')
-        for rank, nick_count in enumerate(nick_and_count_sorted_by_count.items()):
-            nick = nick_count[0]
-            count = nick_count[1]
-            file.write(f'{rank + 1}º {nick}: {count}\n')
+        for rank, name_count in enumerate(name_and_count_sorted_by_count.items()):
+            name = name_count[0]
+            count = name_count[1]
+            file.write(f'{rank + 1}º {name}: {count}\n')
 
 
 if __name__ == '__main__':
@@ -124,8 +144,8 @@ if __name__ == '__main__':
 
     messages_of_week = extract_messages_of_week(input_file_path, start_date, end_date)
 
-    sector_and_count, nick_and_count = create_dict_sector2count(messages_of_week)
+    sector_and_count, name_and_count = create_dict_sector2count(messages_of_week)
 
-    show_results_in_txt(sector_and_count, nick_and_count, output_directory_path, start_date, end_date)
+    save_results_file(sector_and_count, name_and_count, output_directory_path, start_date, end_date)
 
     print(f"Relatório gerado com sucesso e salvo em {output_directory_path}")
