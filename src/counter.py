@@ -28,9 +28,9 @@ def extract_messages_of_week(input_file_path: str, start_date: datetime, end_dat
 
 def get_name_from_message(message_text: str):
 
-    message_without_count = re.sub(r'\+(\d+)', '', message_text)  # removes +4
+    message_without_points = re.sub(r'\+(\d+)', '', message_text)  # removes +4
     cleaned_message = re.sub(
-        r'#(\w{3,4})', '', message_without_count).strip()  # removes #noe
+        r'#(\w{3,4})', '', message_without_points).strip()  # removes #noe
 
     # Se só tiver uma palavra, essa palavra é o nome
     message_words = cleaned_message.split(' ')
@@ -49,9 +49,9 @@ def get_name_from_message(message_text: str):
     return name.title()
 
 
-def create_dict_sector2count(messages: List) -> Tuple[Dict, Dict]:
-    sector_and_count = {}
-    name_and_count = {}
+def create_dict_sector2points(messages: List) -> Tuple[Dict, Dict]:
+    sector_and_points = {}
+    name_and_points = {}
 
     for message in messages:
 
@@ -61,41 +61,41 @@ def create_dict_sector2count(messages: List) -> Tuple[Dict, Dict]:
 
         sector_match = re.search(
             r'#(\w{3,4})', message_text)  # ex: #nip, #bope
-        count_match = re.search(r'\+(\d+)', message_text)  # ex: +2, +10
+        points_match = re.search(r'\+(\d+)', message_text)  # ex: +2, +10
 
-        if sector_match and count_match:
+        if sector_match and points_match:
             sector = sector_match.group(1).lower()
-            count = count_match.group(1)
+            points = points_match.group(1)
 
-            if sector in sector_and_count:
-                sector_and_count[sector] += int(count)
+            if sector in sector_and_points:
+                sector_and_points[sector] += int(points)
 
             else:
-                sector_and_count[sector] = int(count)
+                sector_and_points[sector] = int(points)
 
-            # caso message_text possua sector e count mas não tenha nome, sector pontua mas a pessoa não.
+            # caso message_text possua sector e points mas não tenha nome, sector pontua mas a pessoa não.
             # pontuação para o núcleo será considerada mas não será atribuída a nenhum jogador
             name = get_name_from_message(message_text)
             if name:
-                if name in name_and_count:
-                    name_and_count[name] += int(count)
+                if name in name_and_points:
+                    name_and_points[name] += int(points)
                 else:
-                    name_and_count[name] = int(count)
+                    name_and_points[name] = int(points)
             else:
                 print(f'Mensagem sem nome: {message}')
         else:
             continue
 
-    return sector_and_count, name_and_count
+    return sector_and_points, name_and_points
 
 
-def save_results_file(sector_and_count: Dict, name_and_count, output_directory_path: str, start_date: datetime,
+def save_results_file(sector_and_points: Dict, name_and_points, output_directory_path: str, start_date: datetime,
                       end_date: datetime):
-    sector_and_count_sorted_by_count = dict(sorted(sector_and_count.items(),
+    sector_and_points_sorted_by_points = dict(sorted(sector_and_points.items(),
                                                    key=lambda item: item[1],
                                                    reverse=True))
 
-    name_and_count_sorted_by_count = dict(sorted(name_and_count.items(),
+    name_and_points_sorted_by_points = dict(sorted(name_and_points.items(),
                                                  key=lambda item: item[1],
                                                  reverse=True))
 
@@ -108,22 +108,22 @@ def save_results_file(sector_and_count: Dict, name_and_count, output_directory_p
 
         file.write(
             f'🦾 FOCA FIT SEMANAL - {start_date_formatted} A {end_date_formatted} 🦾 \n')
-        file.write('Gerado por: Focafit_counter 😎 \n\n')
+        file.write('Gerado por: Focafit_pointser 😎 \n\n')
 
         file.write('💜💙🖤 RANKING POR NÚCLEO 💚🧡💛 \n\n')
 
-        for rank, sector_count in enumerate(sector_and_count_sorted_by_count.items()):
-            sector = sector_count[0]
-            count = sector_count[1]
-            file.write(f'{rank + 1}º {sector.upper()}: {count}\n')
+        for rank, sector_points in enumerate(sector_and_points_sorted_by_points.items()):
+            sector = sector_points[0]
+            points = sector_points[1]
+            file.write(f'{rank + 1}º {sector.upper()}: {points}\n')
 
         file.write('\n\n')
 
         file.write('🏆 RANKING POR PESSOA 🏆\n\n')
-        for rank, name_count in enumerate(name_and_count_sorted_by_count.items()):
-            name = name_count[0]
-            count = name_count[1]
-            file.write(f'{rank + 1}º {name}: {count}\n')
+        for rank, name_points in enumerate(name_and_points_sorted_by_points.items()):
+            name = name_points[0]
+            points = name_points[1]
+            file.write(f'{rank + 1}º {name}: {points}\n')
 
 
 if __name__ == '__main__':
@@ -150,10 +150,10 @@ if __name__ == '__main__':
     messages_of_week = extract_messages_of_week(
         input_file_path, start_date, end_date)
 
-    sector_and_count, name_and_count = create_dict_sector2count(
+    sector_and_points, name_and_points = create_dict_sector2points(
         messages_of_week)
 
-    save_results_file(sector_and_count, name_and_count,
+    save_results_file(sector_and_points, name_and_points,
                       output_directory_path, start_date, end_date)
 
     print(f"Relatório gerado com sucesso e salvo em {output_directory_path}")
