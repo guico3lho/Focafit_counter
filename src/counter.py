@@ -4,6 +4,9 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 from argparse import ArgumentParser
 
+sector_pattern = re.compile(r'#(noe|nip|nut|bope|ndp|trainees)', re.IGNORECASE)
+points_pattern = re.compile(r'([\+|\-]\d+)')
+
 
 def extract_messages_of_week(input_file_path: str, start_date: datetime, end_date: datetime):
     """
@@ -27,10 +30,8 @@ def extract_messages_of_week(input_file_path: str, start_date: datetime, end_dat
 
 
 def get_name_from_message(message_text: str):
-
-    message_without_points = re.sub(r'\+(\d+)', '', message_text)  # removes +4
-    cleaned_message = re.sub(
-        r'#(\w{3,4})', '', message_without_points).strip()  # removes #noe
+    message_without_sector = sector_pattern.sub('', message_text)  # removes #noe
+    cleaned_message = points_pattern.sub('', message_without_sector).strip()  # removes +2
 
     # Se só tiver uma palavra, essa palavra é o nome
     message_words = cleaned_message.split(' ')
@@ -56,12 +57,11 @@ def create_dict_sector2points(messages: List) -> Tuple[Dict, Dict]:
     for message in messages:
 
         # Pega o corpo da mensagem (que inicia depois dos dois pontos)
-        # message_text = '10/05/2023 17:02 - Chico: Chico +2 #NOE'
+        # message = '10/05/2023 17:02 - Chico: Chico +2 #NOE'
         message_text = "".join(message.split(':')[2:]).strip()
 
-        sector_match = re.search(
-            r'#(\w{3,4})', message_text)  # ex: #nip, #bope
-        points_match = re.search(r'\+(\d+)', message_text)  # ex: +2, +10
+        sector_match = sector_pattern.search(message_text)  # ex: #noe
+        points_match = points_pattern.search(message_text)  # ex: +2, -10
 
         if sector_match and points_match:
             sector = sector_match.group(1).lower()
@@ -92,12 +92,12 @@ def create_dict_sector2points(messages: List) -> Tuple[Dict, Dict]:
 def save_results_file(sector_and_points: Dict, name_and_points, output_directory_path: str, start_date: datetime,
                       end_date: datetime):
     sector_and_points_sorted_by_points = dict(sorted(sector_and_points.items(),
-                                                   key=lambda item: item[1],
-                                                   reverse=True))
+                                                     key=lambda item: item[1],
+                                                     reverse=True))
 
     name_and_points_sorted_by_points = dict(sorted(name_and_points.items(),
-                                                 key=lambda item: item[1],
-                                                 reverse=True))
+                                                   key=lambda item: item[1],
+                                                   reverse=True))
 
     output_file_path = path.join(output_directory_path, 'results.txt')
 
