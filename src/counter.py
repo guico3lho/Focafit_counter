@@ -4,9 +4,6 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 from argparse import ArgumentParser
 
-sector_pattern = re.compile(r'#(noe|nip|nut|bope|ndp|trainees)', re.IGNORECASE)
-points_pattern = re.compile(r'([\+|\-]\d+)')
-
 
 def extract_messages_of_week(input_file_path: str, start_date: datetime, end_date: datetime):
     """
@@ -92,6 +89,9 @@ def assign_points(sector_and_points: Dict, name_and_points: Dict, message: str, 
 def create_dict_sector2points(messages: List) -> Tuple[Dict, Dict]:
     sector_and_points = {}
     name_and_points = {}
+
+    sector_pattern = re.compile(r'#(noe|nip|nut|bope|ndp|trainees)', re.IGNORECASE)
+    points_pattern = re.compile(r'([\+|\-]\d+)') # ex: +2, -10
 
     for message in messages:
 
