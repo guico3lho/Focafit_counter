@@ -28,8 +28,9 @@ def extract_messages_of_week(input_file_path: str, start_date: datetime, end_dat
 
 def get_name_from_message(message_text: str):
 
-    message_without_count = re.sub(r'\+(\d+)', '', message_text) # removes +4
-    cleaned_message = re.sub(r'#(\w{3,4})', '', message_without_count).strip() # removes #noe
+    message_without_count = re.sub(r'\+(\d+)', '', message_text)  # removes +4
+    cleaned_message = re.sub(
+        r'#(\w{3,4})', '', message_without_count).strip()  # removes #noe
 
     # Se só tiver uma palavra, essa palavra é o nome
     message_words = cleaned_message.split(' ')
@@ -37,7 +38,8 @@ def get_name_from_message(message_text: str):
         name = message_words[0]
     else:
         # Se tiver mais de uma palavra, pega as palavras que começam com letra maiúscula e junta
-        capitalized_words = re.findall(r'\b[A-Z][^A-Z ]+\b', cleaned_message)  # ex: Chico Buarque
+        capitalized_words = re.findall(
+            r'\b[A-Z][^A-Z ]+\b', cleaned_message)  # ex: Chico Buarque
         name = ' '.join(capitalized_words)
 
         # Se tiver mais de uma palavra mas nenhuma começar com letra maiúscula, pega a primeira palavra
@@ -57,7 +59,8 @@ def create_dict_sector2count(messages: List) -> Tuple[Dict, Dict]:
         # message_text = '10/05/2023 17:02 - Chico: Chico +2 #NOE'
         message_text = "".join(message.split(':')[2:]).strip()
 
-        sector_match = re.search(r'#(\w{3,4})', message_text)  # ex: #nip, #bope
+        sector_match = re.search(
+            r'#(\w{3,4})', message_text)  # ex: #nip, #bope
         count_match = re.search(r'\+(\d+)', message_text)  # ex: +2, +10
 
         if sector_match and count_match:
@@ -87,7 +90,7 @@ def create_dict_sector2count(messages: List) -> Tuple[Dict, Dict]:
 
 
 def save_results_file(sector_and_count: Dict, name_and_count, output_directory_path: str, start_date: datetime,
-                        end_date: datetime):
+                      end_date: datetime):
     sector_and_count_sorted_by_count = dict(sorted(sector_and_count.items(),
                                                    key=lambda item: item[1],
                                                    reverse=True))
@@ -103,7 +106,8 @@ def save_results_file(sector_and_count: Dict, name_and_count, output_directory_p
         start_date_formatted = start_date.strftime('%d/%m')
         end_date_formatted = end_date.strftime('%d/%m')
 
-        file.write(f'🦾 FOCA FIT SEMANAL - {start_date_formatted} A {end_date_formatted} 🦾 \n')
+        file.write(
+            f'🦾 FOCA FIT SEMANAL - {start_date_formatted} A {end_date_formatted} 🦾 \n')
         file.write('Gerado por: Focafit_counter 😎 \n\n')
 
         file.write('💜💙🖤 RANKING POR NÚCLEO 💚🧡💛 \n\n')
@@ -124,11 +128,12 @@ def save_results_file(sector_and_count: Dict, name_and_count, output_directory_p
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument('-i', '--input_file_path', type=str, default='./assets/input/chat.txt', dest='input_file_path')
-    parser.add_argument('-o', '--output_directory_path', type=str, default='./assets/output',
-                        dest='output_directory_path')
-    parser.add_argument('-d', '--dia_da_contagem', type=str, default=datetime.now().strftime('%d/%m/%Y'),
-                        dest='dia_da_contagem')
+    parser.add_argument('-i', '--input_file_path', type=str,
+                        default='./assets/input/chat.txt')
+    parser.add_argument('-o', '--output_directory_path',
+                        type=str, default='./assets/output')
+    parser.add_argument('-d', '--dia_da_contagem', type=str,
+                        default=datetime.now().strftime('%d/%m/%Y'))
     args = parser.parse_args()
 
     input_file_path = args.input_file_path
@@ -142,10 +147,13 @@ if __name__ == '__main__':
     # considerando que o relatório de contagem é realizado na próxima segunda (um dia depois do último dia válido para a contagem da semana em questão)
     end_date = today - timedelta(days=1)
 
-    messages_of_week = extract_messages_of_week(input_file_path, start_date, end_date)
+    messages_of_week = extract_messages_of_week(
+        input_file_path, start_date, end_date)
 
-    sector_and_count, name_and_count = create_dict_sector2count(messages_of_week)
+    sector_and_count, name_and_count = create_dict_sector2count(
+        messages_of_week)
 
-    save_results_file(sector_and_count, name_and_count, output_directory_path, start_date, end_date)
+    save_results_file(sector_and_count, name_and_count,
+                      output_directory_path, start_date, end_date)
 
     print(f"Relatório gerado com sucesso e salvo em {output_directory_path}")
