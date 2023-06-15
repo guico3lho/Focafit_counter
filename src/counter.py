@@ -25,64 +25,91 @@ def extract_messages_of_week(input_file_path: str, start_date: datetime, end_dat
 
     return messages
 
+def get_capitalized_name(message_text: str):
+    capitalized_words = re.findall(
+            r'\b[A-Z][^A-Z ]+\b', message_text)  # ex: Chico Buarque
+    name = ' '.join(capitalized_words)
+
+    return name
 
 def get_name_from_message(message_text: str):
-
-    message_without_points = re.sub(r'\+(\d+)', '', message_text)  # removes +4
-    cleaned_message = re.sub(
-        r'#(\w{3,4})', '', message_without_points).strip()  # removes #noe
-
     # Se só tiver uma palavra, essa palavra é o nome
-    message_words = cleaned_message.split(' ')
+    message_words = message_text.split(' ')
     if len(message_words) == 1:
         name = message_words[0]
     else:
         # Se tiver mais de uma palavra, pega as palavras que começam com letra maiúscula e junta
-        capitalized_words = re.findall(
-            r'\b[A-Z][^A-Z ]+\b', cleaned_message)  # ex: Chico Buarque
-        name = ' '.join(capitalized_words)
-
+        name = get_capitalized_name(message_text)
         # Se tiver mais de uma palavra mas nenhuma começar com letra maiúscula, pega a primeira palavra
         if not name:
             name = message_words[0]
 
     return name.title()
 
+def get_names_from_message(message_text: str):
+    names = []
+    splitted_message = message_text.split(',')
+
+    for text in splitted_message:
+        name = get_capitalized_name(text)
+        if name:
+            names.append(name.title())
+
+    return names
+
+
+def assign_points(sector_and_points: Dict, name_and_points: Dict, message: str, message_text: str, sector: str, points: str):
+    names = []
+
+    # caso message_text possua sector e points mas não tenha nome, sector pontua mas a pessoa não.
+    # pontuação para o núcleo será considerada mas não será atribuída a nenhum jogador
+    if sector in sector_and_points:
+        sector_and_points[sector] += int(points)
+    else:
+        sector_and_points[sector] = int(points)
+
+    if ',' in message_text:
+        names = get_names_from_message(message_text)
+        points = int(points) // len(names)
+    else:
+        name = get_name_from_message(message_text)
+        if name:
+            names.append(name)
+
+    if not names:
+        print(f'Mensagem sem nome: {message}')
+
+    for name in names:
+        if name in name_and_points:
+            name_and_points[name] += int(points)
+        else:
+            name_and_points[name] = int(points)
+
 
 def create_dict_sector2points(messages: List) -> Tuple[Dict, Dict]:
     sector_and_points = {}
     name_and_points = {}
 
+    sector_pattern = re.compile(r'#(noe|nip|nut|bope|ndp|trainees)', re.IGNORECASE)
+    points_pattern = re.compile(r'([\+|\-]\d+)') # ex: +2, -10
+
     for message in messages:
 
         # Pega o corpo da mensagem (que inicia depois dos dois pontos)
-        # message_text = '10/05/2023 17:02 - Chico: Chico +2 #NOE'
+        # message = '10/05/2023 17:02 - Chico: Chico +2 #NOE'
         message_text = "".join(message.split(':')[2:]).strip()
 
-        sector_match = re.search(
-            r'#(\w{3,4})', message_text)  # ex: #nip, #bope
-        points_match = re.search(r'\+(\d+)', message_text)  # ex: +2, +10
+        sector_match = sector_pattern.search(message_text)  # ex: #noe
+        points_match = points_pattern.search(message_text)  # ex: +2, -10
 
         if sector_match and points_match:
+            message_without_sector = sector_pattern.sub('', message_text)  # removes #noe
+            cleaned_message = points_pattern.sub('', message_without_sector).strip()  # removes +2
+
             sector = sector_match.group(1).lower()
             points = points_match.group(1)
 
-            if sector in sector_and_points:
-                sector_and_points[sector] += int(points)
-
-            else:
-                sector_and_points[sector] = int(points)
-
-            # caso message_text possua sector e points mas não tenha nome, sector pontua mas a pessoa não.
-            # pontuação para o núcleo será considerada mas não será atribuída a nenhum jogador
-            name = get_name_from_message(message_text)
-            if name:
-                if name in name_and_points:
-                    name_and_points[name] += int(points)
-                else:
-                    name_and_points[name] = int(points)
-            else:
-                print(f'Mensagem sem nome: {message}')
+            assign_points(sector_and_points, name_and_points, message, cleaned_message, sector, points)
         else:
             continue
 
@@ -92,12 +119,12 @@ def create_dict_sector2points(messages: List) -> Tuple[Dict, Dict]:
 def save_results_file(sector_and_points: Dict, name_and_points, output_directory_path: str, start_date: datetime,
                       end_date: datetime):
     sector_and_points_sorted_by_points = dict(sorted(sector_and_points.items(),
-                                                   key=lambda item: item[1],
-                                                   reverse=True))
+                                                     key=lambda item: item[1],
+                                                     reverse=True))
 
     name_and_points_sorted_by_points = dict(sorted(name_and_points.items(),
-                                                 key=lambda item: item[1],
-                                                 reverse=True))
+                                                   key=lambda item: item[1],
+                                                   reverse=True))
 
     output_file_path = path.join(output_directory_path, 'results.txt')
 
