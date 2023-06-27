@@ -90,7 +90,7 @@ def create_dict_sector2points(messages: List) -> Tuple[Dict, Dict]:
     sector_and_points = {}
     name_and_points = {}
 
-    sector_pattern = re.compile(r'#(noe|nip|nut|bope|ndp|trainees)', re.IGNORECASE)
+    sector_pattern = re.compile(r'#(noe|nip|nut|bope|ndp|pres|trainees)', re.IGNORECASE)
     points_pattern = re.compile(r'([\+|\-]\d+)') # ex: +2, -10
 
     for message in messages:
