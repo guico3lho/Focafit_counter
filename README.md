@@ -1,39 +1,38 @@
 # Focafit Counter
 
-## This repository contains the code for the Focafit Counter: an automation to count the number of points each sector scored weekly doing exercises!
+## Esse repositório contém o código para o Focafit Counter: uma automação para contar o número de pontos que cada núcleo da CJR fez semanalmente fazendo exercícios!
 
-## Project Overview
+## Visão geral do projeto
+- A pasta `assets` contém os arquivos de entrada e saída do projeto
+- A pasta `src` contém o código que o Focafit Counter usa para funcionar
+- O arquivo `requirements.txt` contém as dependências do projeto
+- [OPCIONAL] A pasta `.runAndDebugOnPyCharm` contém configurações para executar o projeto no Pycharm
 
-- `assets` folder contains the input and output of the project
-- `src` folder contains the code the Focafit coounter uses to work
-- `requirements.txt` file contains the dependecies of the project
-- `.runAndDebugOnPyCharm` folder contains configuration to Run/Debug project on Pycharm
-
-## The project was made using:
-
+## O projeto foi feito usando:
 - PyCharm IDE
 - Anaconda
 - Python 3.10.9
 - Windows 10+
-- All packages used are listed in the `requirements.txt` file
+- Todas as bibliotecas usadas estão listadas no arquivo `requirements.txt`
 
-## Setting environment
+## Configurando o ambiente
+- Vá no grupo do Whatsapp "Focafit" e exporte a conversa em formato txt
+- Clone o repositório Focafit_counter
+- Dentro da pasta `Focafit_counter`:
+  - Instale as dependências usando `pip install -r requirements.txt`;
+  - Adicione o arquivo txt exportado do grupo "Focafit" do Whatsapp na pasta `assets/input`.
 
-- Clone the repository
-- Inside `Focafit_counter` directory:
-  - Install the dependencies using `pip install -r requirements.txt`;
-  - Add the exported txt file from Whatsapp into `assets/input` folder.
 
+## Rodando o projeto localmente
+- Esse projeto usa a biblioteca `argparse`
+- Atualmente, existem 3 argumentos:
+  - `"-i"` para especificar o arquivo de entrada (formato: path, tipo: str)
+  - `"-o"` para especificar o arquivo de saída (formato: path, tipo: str)
+  - `"-d"` para especificar a data que a contagem será feita (formato: "dd/mm/yyyy", tipo: str)
+  - Rode `python -m src.counter -i "./assets/input/chat_example.txt" -o "./assets/output" -d "15/05/2023"` para rodar um exemplo do Focafit_counter!
+  - O resultado pode ser checado dentro da pasta `./assets/output`
+  - O resultado esperado é:
 
-## Running the code
-- This project uses `argparse` library
-- Currently, there are 3 arguments:
-  - `"-i"` to specify the input file (format: path, type: str)
-  - `"-o"` to specify the output file (format: path, type: str)
-  - `"-d"` to specify the date the counting will be made (format: "dd/mm/yyyy", type: str)
-  - Run `python -m src.counter -i "./assets/input/chat_example.txt" -o "./assets/output" -d "15/05/2023"` to run an example of the Focafit_counter!
-  - The result can be checked inside `./assets/output` folder
-  - The expected result is:
 ```
 🦾 FOCA FIT SEMANAL - 08/05 A 14/05 🦾 
 Gerado por: Focafit_counter 😎 
