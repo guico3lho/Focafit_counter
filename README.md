@@ -38,19 +38,22 @@
   - O resultado esperado é:
 ```
 🦾 FOCA FIT SEMANAL - 08/05 A 14/05 🦾 
-Gerado por: Focafit_counter 😎 
+Gerado por: Focafit_pointser 😎 
 
-💜💙🖤 RANKING POR NÚCLEO 💚🧡💛 
+💜💙🖤✅ RANKING POR NÚCLEO ✅💚🧡💛 
 
-1ª BOPE: 40
-2ª NOE: 6
-3ª NUT: 4
-4ª NDP: 2
+1º BOPE: 40
+2º NOE: 12
+3º NUT: 4
+4º NDP: 2
 
 
 🏆 RANKING POR PESSOA 🏆
 
-1º Chico: 4
-2º Zeca: 2
-
+1º Zeca: 4
+2º Chico: 2
+3º Chico Buarque: 2
+4º André Silva: 2
+5º Carlos: 2
+6º Rafa: 2
 ```
