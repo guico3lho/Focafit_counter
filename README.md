@@ -23,16 +23,19 @@
   - Adicione o arquivo txt exportado do grupo "Focafit" do Whatsapp na pasta `assets/input`.
 
 
-## Rodando o projeto localmente
+## Parâmetros
 - Esse projeto usa a biblioteca `argparse`
 - Atualmente, existem 3 argumentos:
   - `"-i"` para especificar o arquivo de entrada (formato: path, tipo: str)
   - `"-o"` para especificar o arquivo de saída (formato: path, tipo: str)
-  - `"-d"` para especificar a data que a contagem será feita (formato: "dd/mm/yyyy", tipo: str)
-  - Rode `python -m src.counter -i "./assets/input/chat_example.txt" -o "./assets/output" -d "15/05/2023"` para rodar um exemplo do Focafit_counter!
+  - `"-d"` colocar o último dia que a contagem será levada em consideração. O bot irá levar em consideração esse dia e os 6 anteriores (formato: "dd/mm/yyyy", tipo: str)
+
+## Exemplo da contagem de pontos de uma semana arbitrária (08/05/2023 a 14/05/2023)
+- Dentro da pasta `Focafit_counter`:
+  - Rode `python -m src.counter -i "./assets/input/chat_example.txt" -o "./assets/output" -d "14/05/2023"` para rodar um exemplo do Focafit_counter!
+  - O argumento -d "14/05/2023" foi considerado pois é o último dia da semana que queremos contar os pontos
   - O resultado pode ser checado dentro da pasta `./assets/output`
   - O resultado esperado é:
-
 ```
 🦾 FOCA FIT SEMANAL - 08/05 A 14/05 🦾 
 Gerado por: Focafit_counter 😎 
