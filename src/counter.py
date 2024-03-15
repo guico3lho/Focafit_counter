@@ -14,6 +14,9 @@ def main():
                         type=str, default='./assets/output')
     parser.add_argument('-d', '--dia_da_contagem', type=str,
                         default=datetime.now().strftime('%d/%m/%Y'))
+    parser.add_argument('-l', '--language', type=str,
+                        default='pt')
+
     args = parser.parse_args()
 
     input_file_path = args.input_file_path
@@ -21,8 +24,10 @@ def main():
     dia_da_contagem = args.dia_da_contagem
     end_date = datetime.strptime(dia_da_contagem, '%d/%m/%Y')
     start_date = end_date - timedelta(days=6)
+    language = args.language
+    # start_date = datetime(2024, 1, 1)
 
-    messages_from_date_interval = extract_messages_from_date_interval(
+    messages_from_date_interval = extract_messages_from_date_interval(language,
         input_file_path, start_date, end_date)
 
     nucleo_and_points, name_and_points = create_dict_nucleo2points(
@@ -34,7 +39,7 @@ def main():
     print(f"Relatório gerado com sucesso e salvo em {output_directory_path}")
 
 
-def extract_messages_from_date_interval(input_file_path: str, start_date: datetime, end_date: datetime) -> List[str]:
+def extract_messages_from_date_interval(language: str, input_file_path: str, start_date: datetime, end_date: datetime) -> List[str]:
     """
     :param input_file_path: caminho do arquivo de entrada; ex: './assets/input/chat.txt'
     :param start_date: data de início da contagem; ex: datetime(2023, 7, 10) # 2023-07-10 00:00:00
@@ -50,9 +55,16 @@ def extract_messages_from_date_interval(input_file_path: str, start_date: dateti
     for message in messages:
         # REFAC: Em vez de usar for para cada mensagem, usar regex para filtrar todas as mensagens de uma só vez
         # identificar a data contida na linha
-        date_match = re.search(r'\d{2}/\d{2}/\d{4}', message)
+        date_match = re.search(r'\d{1,2}/\d{1,2}/\d{2,4}', message)
         if date_match:
-            message_date = datetime.strptime(date_match.group(0), '%d/%m/%Y')  # 2023-04-04 00:00:00
+
+            if language == 'pt':
+                message_date = datetime.strptime(date_match.group(0), '%d/%m/%Y')  # 22/04/23
+            elif language == 'en':
+                message_date = datetime.strptime(date_match.group(0), '%m/%d/%y')  # 04/22/23
+            else:
+                print("Linguagem incorreta")
+                exit()
             if start_date <= message_date <= end_date:
                 messages_from_date_interval.append(message)
 
