@@ -12,7 +12,7 @@ def main():
                         default='./assets/input/chat.txt')
     parser.add_argument('-o', '--output_directory_path',
                         type=str, default='./assets/output')
-    parser.add_argument('-d', '--dia_da_contagem', type=str,
+    parser.add_argument('-d', '--primeiro_dia_contagem', type=str,
                         default=datetime.now().strftime('%d/%m/%Y'))
     parser.add_argument('-l', '--language', type=str,
                         default='pt')
@@ -21,10 +21,11 @@ def main():
 
     input_file_path = args.input_file_path
     output_directory_path = args.output_directory_path
-    dia_da_contagem = args.dia_da_contagem
-    end_date = datetime.strptime(dia_da_contagem, '%d/%m/%Y')
-    start_date = end_date - timedelta(days=6)
+    primeiro_dia_contagem = args.primeiro_dia_contagem
     language = args.language
+
+    start_date = datetime.strptime(primeiro_dia_contagem, '%d/%m/%Y')
+    end_date = start_date + timedelta(days=6)
     # start_date = datetime(2024, 1, 1)
 
     messages_from_date_interval = extract_messages_from_date_interval(language,
