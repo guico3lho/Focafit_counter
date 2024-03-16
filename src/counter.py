@@ -3,6 +3,7 @@ import re
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 from argparse import ArgumentParser
+from tests.functions import print_messages_from_interval
 
 # Testing
 
@@ -17,7 +18,14 @@ def main():
     parser.add_argument('-l', '--language', type=str,
                         default='pt')
 
+    parser.add_argument('-t', '--test', action='store_true')
+
+
+
+
     args = parser.parse_args()
+
+    test = args.test
 
     input_file_path = args.input_file_path
     output_directory_path = args.output_directory_path
@@ -30,6 +38,9 @@ def main():
 
     messages_from_date_interval = extract_messages_from_date_interval(language,
         input_file_path, start_date, end_date)
+
+    if test:
+        print_messages_from_interval(messages_from_date_interval)
 
     nucleo_and_points, name_and_points = create_dict_nucleo2points(
         messages_from_date_interval)
@@ -96,6 +107,7 @@ def create_dict_nucleo2points(messages_from_date_interval: List) -> Tuple[Dict, 
         nucleo_match = nucleo_pattern.search(message_body)  # ex: #noe
         points_match = points_pattern.search(message_body)  # ex: +2, -10
 
+        # Se a mensagem possui os dois elementos obrigatórios (nucleo e pontos)
         if nucleo_match and points_match:
             message_without_nucleo = nucleo_pattern.sub('', message_body)  # removes #noe
             cleaned_message = points_pattern.sub('', message_without_nucleo).strip()  # removes +2
