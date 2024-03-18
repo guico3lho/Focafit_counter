@@ -167,8 +167,8 @@ def assign_points(nucleo_and_points: Dict, name_and_points: Dict, message: str, 
 
 # sub function
 def get_name_from_message(cleaned_message: str):
-    # Se só tiver uma palavra, essa palavra é o nome
     message_words = cleaned_message.split(' ')
+    # Se só tiver uma palavra, essa palavra é o nome
     if len(message_words) == 1:
         name = message_words[0]
     else:
