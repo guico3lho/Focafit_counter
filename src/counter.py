@@ -5,7 +5,6 @@ from typing import Dict, List, Tuple
 from argparse import ArgumentParser
 from tests.functions import print_messages_from_interval
 
-# Testing
 
 def main():
     parser = ArgumentParser()
@@ -20,24 +19,21 @@ def main():
 
     parser.add_argument('-t', '--test', action='store_true')
 
-
-
-
     args = parser.parse_args()
 
     test = args.test
-
     input_file_path = args.input_file_path
     output_directory_path = args.output_directory_path
     primeiro_dia_contagem = args.primeiro_dia_contagem
     language = args.language
 
-    start_date = datetime.strptime(primeiro_dia_contagem, '%d/%m/%Y')
-    end_date = start_date + timedelta(days=6)
-    # start_date = datetime(2024, 1, 1)
+    # start_date = datetime.strptime(primeiro_dia_contagem, '%d/%m/%Y')
+    # end_date = start_date + timedelta(days=6)
+    start_date = datetime(2024, 1, 1)
+    end_date = datetime(2024, 3, 17)
 
     messages_from_date_interval = extract_messages_from_date_interval(language,
-        input_file_path, start_date, end_date)
+                                                                      input_file_path, start_date, end_date)
 
     if test:
         print_messages_from_interval(messages_from_date_interval)
@@ -51,7 +47,8 @@ def main():
     print(f"Relatório gerado com sucesso e salvo em {output_directory_path}")
 
 
-def extract_messages_from_date_interval(language: str, input_file_path: str, start_date: datetime, end_date: datetime) -> List[str]:
+def extract_messages_from_date_interval(language: str, input_file_path: str, start_date: datetime,
+                                        end_date: datetime) -> List[str]:
     """
     :param input_file_path: caminho do arquivo de entrada; ex: './assets/input/chat.txt'
     :param start_date: data de início da contagem; ex: datetime(2023, 7, 10) # 2023-07-10 00:00:00
@@ -165,6 +162,7 @@ def assign_points(nucleo_and_points: Dict, name_and_points: Dict, message: str, 
     except ZeroDivisionError:
         print(f'Problema ao pegar nomes e pontos na seguinte mensagem: {message}')
 
+
 # sub function
 def get_name_from_message(cleaned_message: str):
     message_words = cleaned_message.split(' ')
@@ -205,7 +203,6 @@ def get_capitalized_name(cleaned_message: str):
 
 def save_results_file(nucleo_and_points: Dict, name_and_points: Dict, output_directory_path: str, start_date: datetime,
                       end_date: datetime):
-
     """
     :param nucleo_and_points: dicionário que mapeia cada nucleo para a sua pontuação
     :param name_and_points: dicionário que mapeia cada nome para a sua pontuação
@@ -225,12 +222,12 @@ def save_results_file(nucleo_and_points: Dict, name_and_points: Dict, output_dir
 
     with open(output_file_path, 'w', encoding='utf-8') as file:
 
-        start_date_formatted = start_date.strftime('%d/%m')
-        end_date_formatted = end_date.strftime('%d/%m')
+        start_date_formatted = start_date.strftime('%d/%m/%y')
+        end_date_formatted = end_date.strftime('%d/%m/%y')
 
         file.write(
             f'🦾 FOCA FIT SEMANAL - {start_date_formatted} A {end_date_formatted} 🦾 \n')
-        file.write('Gerado por: Focafit_pointser 😎 \n\n')
+        file.write('Gerado por: Focafit_counter 😎 \n\n')
 
         file.write('💜💙🖤✅ RANKING POR NÚCLEO ✅💚🧡💛 \n\n')
 
