@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 from argparse import ArgumentParser
 from tests.functions import print_messages_from_interval
+import json
 
 
 def main():
@@ -27,10 +28,8 @@ def main():
     primeiro_dia_contagem = args.primeiro_dia_contagem
     language = args.language
 
-    # start_date = datetime.strptime(primeiro_dia_contagem, '%d/%m/%Y')
-    # end_date = start_date + timedelta(days=6)
-    start_date = datetime(2024, 1, 1)
-    end_date = datetime(2024, 3, 17)
+    start_date = datetime.strptime(primeiro_dia_contagem, '%d/%m/%Y')
+    end_date = start_date + timedelta(days=6)
 
     messages_from_date_interval = extract_messages_from_date_interval(language,
                                                                       input_file_path, start_date, end_date)
@@ -38,10 +37,10 @@ def main():
     if test:
         print_messages_from_interval(messages_from_date_interval)
 
-    nucleo_and_points, name_and_points = create_dict_nucleo2points(
+    nucleos_and_points, name_and_points = create_dict_nucleo2points(
         messages_from_date_interval)
 
-    save_results_file(nucleo_and_points, name_and_points,
+    save_results_file(nucleos_and_points, name_and_points,
                       output_directory_path, start_date, end_date)
 
     print(f"Relatório gerado com sucesso e salvo em {output_directory_path}")
@@ -83,11 +82,11 @@ def extract_messages_from_date_interval(language: str, input_file_path: str, sta
 def create_dict_nucleo2points(messages_from_date_interval: List) -> Tuple[Dict, Dict]:
     """
     :param messages_from_date_interval: lista de mensagens do grupo focafit entre start_date e end_date
-    :return nucleo_and_points: dicionário que mapeia cada nucleo para a sua pontuação
+    :return nucleos_and_points: dicionário que mapeia cada nucleo para a sua pontuação
     :return name_and_points: dicionário que mapeia cada nome para a sua pontuação
     """
 
-    nucleo_and_points = {}
+    nucleos_and_points = {}
     name_and_points = {}
 
     nucleo_pattern = re.compile(r'#(noe|nip|nut|bope|ndp|pres|trainees)', re.IGNORECASE)  # ex: #noe, #NUT
@@ -105,26 +104,26 @@ def create_dict_nucleo2points(messages_from_date_interval: List) -> Tuple[Dict, 
         points_match = points_pattern.search(message_body)  # ex: +2, -10
 
         # Se a mensagem possui os dois elementos obrigatórios (nucleo e pontos)
-        if nucleo_match and points_match:
+        if nucleo_match and points_match and int(points_match.group(1)) < 100:
             message_without_nucleo = nucleo_pattern.sub('', message_body)  # removes #noe
             cleaned_message = points_pattern.sub('', message_without_nucleo).strip()  # removes +2
 
             nucleo = nucleo_match.group(1).lower()
             points = points_match.group(1)
 
-            assign_points(nucleo_and_points, name_and_points, message, cleaned_message, nucleo, points)
+            assign_points(nucleos_and_points, name_and_points, message, cleaned_message, nucleo, points)
         else:
             continue
 
-    return nucleo_and_points, name_and_points
+    return nucleos_and_points, name_and_points
 
 
 # sub function
-def assign_points(nucleo_and_points: Dict, name_and_points: Dict, message: str, cleaned_message: str, nucleo: str,
+def assign_points(nucleos_and_points: Dict, name_and_points: Dict, message: str, cleaned_message: str, nucleo: str,
                   points: str):
     """
 
-    :param nucleo_and_points: dicionário que mapeia cada nucleo para a sua pontuação
+    :param nucleos_and_points: dicionário que mapeia cada nucleo para a sua pontuação
     :param name_and_points: dicionário que mapeia cada nome para a sua pontuação
     :param message: mensagem original no intervalo definido na função pai
     :param cleaned_message:  mensagem limpa (possui nome da pessoa, provavelmente)
@@ -138,10 +137,10 @@ def assign_points(nucleo_and_points: Dict, name_and_points: Dict, message: str, 
     # pontuação para o núcleo será considerada mas não será atribuída a nenhum jogador
 
     # pontuando o núcleo
-    if nucleo in nucleo_and_points:
-        nucleo_and_points[nucleo] += int(points)
+    if nucleo in nucleos_and_points:
+        nucleos_and_points[nucleo] += int(points)
     else:
-        nucleo_and_points[nucleo] = int(points)
+        nucleos_and_points[nucleo] = int(points)
     try:
         if ',' in cleaned_message:
             names = get_names_from_message(cleaned_message)
@@ -201,22 +200,25 @@ def get_capitalized_name(cleaned_message: str):
     return name
 
 
-def save_results_file(nucleo_and_points: Dict, name_and_points: Dict, output_directory_path: str, start_date: datetime,
+def save_results_file(nucleos_and_points: Dict, name_and_points: Dict, output_directory_path: str, start_date: datetime,
                       end_date: datetime):
     """
-    :param nucleo_and_points: dicionário que mapeia cada nucleo para a sua pontuação
+    :param nucleos_and_points: dicionário que mapeia cada nucleo para a sua pontuação
     :param name_and_points: dicionário que mapeia cada nome para a sua pontuação
     :param output_directory_path: caminho do diretório de saída onde arquivo 'results.txt' será salvo; ex: './assets/output'
     :param start_date: data de início da contagem; ex: datetime(2023, 7, 10) # 2023-07-10 00:00:00
     :param end_date:  data de fim da contagem; ex: datetime(2023, 7, 16) # 2023-07-16 00:00:00
     """
-    nucleo_and_points_sorted_by_points = dict(sorted(nucleo_and_points.items(),
+    nucleos_and_points_sorted_by_points = dict(sorted(nucleos_and_points.items(),
                                                      key=lambda item: item[1],
                                                      reverse=True))
 
     name_and_points_sorted_by_points = dict(sorted(name_and_points.items(),
                                                    key=lambda item: item[1],
                                                    reverse=True))
+
+    with open ('./assets/input/minimo_pontos_nucleo.json', 'r', encoding='utf-8') as file:
+        name_and_points_minimo = json.load(file)
 
     output_file_path = path.join(output_directory_path, 'results.txt')
 
@@ -231,10 +233,14 @@ def save_results_file(nucleo_and_points: Dict, name_and_points: Dict, output_dir
 
         file.write('💜💙🖤✅ RANKING POR NÚCLEO ✅💚🧡💛 \n\n')
 
-        for rank, nucleo_points in enumerate(nucleo_and_points_sorted_by_points.items()):
-            nucleo = nucleo_points[0]
-            points = nucleo_points[1]
-            file.write(f'{rank + 1}º {nucleo.upper()}: {points}\n')
+        for rank, nucleo_and_points in enumerate(nucleos_and_points_sorted_by_points.items()):
+            nucleo = nucleo_and_points[0]
+            points = nucleo_and_points[1]
+
+            if points > name_and_points_minimo[nucleo]:
+                file.write(f'{rank + 1}º {nucleo.upper()}: {points} ✅\n')
+            else:
+                file.write(f'{rank + 1}º {nucleo.upper()}: {points}\n')
 
         file.write('\n\n')
 

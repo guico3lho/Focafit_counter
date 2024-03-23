@@ -1,9 +1,9 @@
 {
-  "NOE": 40,
-  "NUT": 44,
-  "NIP": 20,
-  "BOPE": 25,
-  "NDP": 25,
-  "PRES": 6,
-  "TRAINEES": 0
+  "noe": 70,
+  "nut": 70,
+  "nip": 60,
+  "bope": 55,
+  "ndp": 70,
+  "pres": 25,
+  "trainees": 0
 }
