@@ -91,6 +91,7 @@ def create_dict_nucleo2points(messages_from_date_interval: List) -> Tuple[Dict, 
 
     nucleo_pattern = re.compile(r'#(noe|nip|nut|bope|ndp|pres|trainees)', re.IGNORECASE)  # ex: #noe, #NUT
     points_pattern = re.compile(r'([\+|\-]\d+)')  # ex: +2, -10
+    name_pattern = re.compile(r'([A-ZÁÉÍÓÚ][a-záéíóú ]+)+')
 
     # message = '10/05/2023 17:02 - Chico: Chico +2 #NOE'
     for message in messages_from_date_interval:
@@ -99,67 +100,48 @@ def create_dict_nucleo2points(messages_from_date_interval: List) -> Tuple[Dict, 
 
         # message without date and time
         message_body = "".join(message.split(':')[2:]).strip()  # NOTE: pq não por [-1]?
-
+        # message_body = 'Vitor Ramos, Junior +4'
         nucleo_match = nucleo_pattern.search(message_body)  # ex: #noe
         points_match = points_pattern.search(message_body)  # ex: +2, -10
-
-        # Se a mensagem possui os dois elementos obrigatórios (nucleo e pontos)
-        if nucleo_match and points_match and int(points_match.group(1)) < 100:
-            message_without_nucleo = nucleo_pattern.sub('', message_body)  # removes #noe
-            cleaned_message = points_pattern.sub('', message_without_nucleo).strip()  # removes +2
-
-            nucleo = nucleo_match.group(1).lower()
-            points = points_match.group(1)
-
-            assign_points(nucleos_and_points, name_and_points, message, cleaned_message, nucleo, points)
+        name_match = name_pattern.search(message_body)
+        if points_match:
+            if nucleo_match:
+                nucleo = nucleo_match.group(1).lower()
+                points = points_match.group(1)
+                assign_points_ranking_nucleo(nucleos_and_points, nucleo, points)
+            if name_match:
+                points = points_match.group(1)
+                message_without_nucleo = nucleo_pattern.sub('', message_body)  # removes #noe
+                cleaned_message = points_pattern.sub('', message_without_nucleo).strip()  # removes +2
+                assign_points_ranking_individual(name_and_points, cleaned_message, points)
         else:
             continue
-
     return nucleos_and_points, name_and_points
 
 
-# sub function
-def assign_points(nucleos_and_points: Dict, name_and_points: Dict, message: str, cleaned_message: str, nucleo: str,
-                  points: str):
-    """
-
-    :param nucleos_and_points: dicionário que mapeia cada nucleo para a sua pontuação
-    :param name_and_points: dicionário que mapeia cada nome para a sua pontuação
-    :param message: mensagem original no intervalo definido na função pai
-    :param cleaned_message:  mensagem limpa (possui nome da pessoa, provavelmente)
-    :param nucleo: nome do nucleo
-    :param points: quantidade de pontos
-    :return:
-    """
-    names = []
-
-    # caso cleaned_message possua nucleo e points mas não tenha nome, nucleo pontua mas a pessoa não.
-    # pontuação para o núcleo será considerada mas não será atribuída a nenhum jogador
-
-    # pontuando o núcleo
+def assign_points_ranking_nucleo(nucleos_and_points: dict, nucleo: str, points: int):
     if nucleo in nucleos_and_points:
         nucleos_and_points[nucleo] += int(points)
     else:
         nucleos_and_points[nucleo] = int(points)
-    try:
-        if ',' in cleaned_message:
-            names = get_names_from_message(cleaned_message)
-            points = int(points) // len(names)
+
+
+# sub function
+def assign_points_ranking_individual(name_and_points: Dict, cleaned_message: str, points: str):
+    names = []
+    if ',' in cleaned_message:
+        names = get_names_from_message(cleaned_message)
+        points = int(points) // len(names)
+    else:
+        name = get_name_from_message(cleaned_message)
+        if name:
+            names.append(name)
+
+    for name in names:
+        if name in name_and_points:
+            name_and_points[name] += int(points)
         else:
-            name = get_name_from_message(cleaned_message)
-            if name:
-                names.append(name)
-
-        if not names:
-            print(f'Mensagem sem nome: {message}')
-
-        for name in names:
-            if name in name_and_points:
-                name_and_points[name] += int(points)
-            else:
-                name_and_points[name] = int(points)
-    except ZeroDivisionError:
-        print(f'Problema ao pegar nomes e pontos na seguinte mensagem: {message}')
+            name_and_points[name] = int(points)
 
 
 # sub function
@@ -210,14 +192,14 @@ def save_results_file(nucleos_and_points: Dict, name_and_points: Dict, output_di
     :param end_date:  data de fim da contagem; ex: datetime(2023, 7, 16) # 2023-07-16 00:00:00
     """
     nucleos_and_points_sorted_by_points = dict(sorted(nucleos_and_points.items(),
-                                                     key=lambda item: item[1],
-                                                     reverse=True))
+                                                      key=lambda item: item[1],
+                                                      reverse=True))
 
     name_and_points_sorted_by_points = dict(sorted(name_and_points.items(),
                                                    key=lambda item: item[1],
                                                    reverse=True))
 
-    with open ('./assets/input/minimo_pontos_nucleo.json', 'r', encoding='utf-8') as file:
+    with open('./assets/input/minimo_pontos_nucleo.json', 'r', encoding='utf-8') as file:
         name_and_points_minimo = json.load(file)
 
     output_file_path = path.join(output_directory_path, 'results.txt')
