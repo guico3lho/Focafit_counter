@@ -37,7 +37,7 @@ def main():
     if test:
         print_messages_from_interval(messages_from_date_interval)
 
-    nucleos_and_points, name_and_points = create_dict_nucleo2points(
+    nucleos_and_points, name_and_points = create_rankings(
         messages_from_date_interval)
 
     save_results_file(nucleos_and_points, name_and_points,
@@ -79,7 +79,7 @@ def extract_messages_from_date_interval(language: str, input_file_path: str, sta
     return messages_from_date_interval
 
 
-def create_dict_nucleo2points(messages_from_date_interval: List) -> Tuple[Dict, Dict]:
+def create_rankings(messages_from_date_interval: List) -> Tuple[Dict, Dict]:
     """
     :param messages_from_date_interval: lista de mensagens do grupo focafit entre start_date e end_date
     :return nucleos_and_points: dicionário que mapeia cada nucleo para a sua pontuação

@@ -5,7 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: Current File",
+            "name": "test_focafit",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "module": "pytest",
+            "args":["tests/test_focafit_messages.py"],
+
+        },
+        {
+            "name": "Chat_exportado_desenv",
             "type": "python",
             "request": "launch",
             "module": "src.counter",
@@ -20,7 +29,41 @@
                 "-d",
                 "10/07/2023",
                 "-t"
-            ],
+            ]
+        },
+        {
+            "name": "Chat_exportado_prod",
+            "type": "python",
+            "request": "launch",
+            "module": "src.counter",
+            "console": "integratedTerminal",
+            "args": [
+                "-l",
+                "en",
+                "-i",
+                "./assets/input/chat_focafit_17_03_24.txt",
+                "-o",
+                "./assets/output",
+                "-d",
+                "10/07/2023"
+            ]
+        },
+        {
+            "name": "Chat_example",
+            "type": "python",
+            "request": "launch",
+            "module": "src.counter",
+            "console": "integratedTerminal",
+            "args": [
+                "-l",
+                "pt",
+                "-i",
+                "./assets/input/chat_example.txt",
+                "-o",
+                "./assets/output",
+                "-d",
+                "08/05/2023"
+            ]
         }
     ]
 }
