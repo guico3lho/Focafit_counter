@@ -1,0 +1,26 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File",
+            "type": "python",
+            "request": "launch",
+            "module": "src.counter",
+            "console": "integratedTerminal",
+            "args": [
+                "-l",
+                "en",
+                "-i",
+                "./assets/input/chat_focafit_17_03_24.txt",
+                "-o",
+                "./assets/output",
+                "-d",
+                "10/07/2023",
+                "-t"
+            ],
+        }
+    ]
+}
