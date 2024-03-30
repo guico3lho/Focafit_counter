@@ -20,6 +20,8 @@ def main():
 
     parser.add_argument('-t', '--test', action='store_true')
 
+    parser.add_argument('-e', '--example', action='store_true')
+
     args = parser.parse_args()
 
     test = args.test
@@ -27,6 +29,7 @@ def main():
     output_directory_path = args.output_directory_path
     primeiro_dia_contagem = args.primeiro_dia_contagem
     language = args.language
+    example = args.example
 
     start_date = datetime.strptime(primeiro_dia_contagem, '%d/%m/%Y')
     end_date = start_date + timedelta(days=6)
@@ -41,7 +44,7 @@ def main():
         messages_from_date_interval)
 
     save_results_file(nucleos_and_points, name_and_points,
-                      output_directory_path, start_date, end_date)
+                      output_directory_path, start_date, end_date, example)
 
     print(f"Relatório gerado com sucesso e salvo em {output_directory_path}")
 
@@ -157,7 +160,8 @@ def get_name_from_message(cleaned_message: str):
         if not name:
             name = message_words[0]
 
-    return name.title()
+    # return name.title()
+    return name
 
 
 # sub function
@@ -167,23 +171,30 @@ def get_names_from_message(cleaned_message: str):
 
     for text in splitted_message:
         name = get_capitalized_name(text)
+        
+        #TEST: Testando nomes que não necessariamente seguem formato "Rafael Costa". Pode ser "RAFAEL costa, Rafael COSTA, etc"
         if name:
-            names.append(name.title())
+            # names.append(name.title())
+            names.append(name)
 
     return names
 
 
 # sub function
 def get_capitalized_name(cleaned_message: str):
+
+    #TEST: Testando nomes que não necessariamente seguem formato "Rafael Costa". Pode ser "RAFAEL costa, Rafael COSTA, etc"
+    # capitalized_words = re.findall(
+    #     r'\b[A-Z][^A-Z ]+\b', cleaned_message)  # ex: Chico Buarque
     capitalized_words = re.findall(
-        r'\b[A-Z][^A-Z ]+\b', cleaned_message)  # ex: Chico Buarque
+        r'\b[A-Z][a-zA-Z]+\b', cleaned_message)  # ex: Chico Buarque
     name = ' '.join(capitalized_words)
 
     return name
 
 
 def save_results_file(nucleos_and_points: Dict, name_and_points: Dict, output_directory_path: str, start_date: datetime,
-                      end_date: datetime):
+                      end_date: datetime, example: bool):
     """
     :param nucleos_and_points: dicionário que mapeia cada nucleo para a sua pontuação
     :param name_and_points: dicionário que mapeia cada nome para a sua pontuação
@@ -198,9 +209,13 @@ def save_results_file(nucleos_and_points: Dict, name_and_points: Dict, output_di
     name_and_points_sorted_by_points = dict(sorted(name_and_points.items(),
                                                    key=lambda item: item[1],
                                                    reverse=True))
-
-    with open('./assets/input/minimo_pontos_nucleo.json', 'r', encoding='utf-8') as file:
-        name_and_points_minimo = json.load(file)
+    if example:
+        with open('./assets/input/minimo_pontos_nucleo_example.json', 'r', encoding='utf-8') as file:
+            name_and_points_minimo = json.load(file)
+        
+    else:
+        with open('./assets/input/minimo_pontos_nucleo.json', 'r', encoding='utf-8') as file:
+            name_and_points_minimo = json.load(file)
 
     output_file_path = path.join(output_directory_path, 'results.txt')
 
@@ -219,7 +234,7 @@ def save_results_file(nucleos_and_points: Dict, name_and_points: Dict, output_di
             nucleo = nucleo_and_points[0]
             points = nucleo_and_points[1]
 
-            if points > name_and_points_minimo[nucleo]:
+            if points >= name_and_points_minimo[nucleo]:
                 file.write(f'{rank + 1}º {nucleo.upper()}: {points} ✅\n')
             else:
                 file.write(f'{rank + 1}º {nucleo.upper()}: {points}\n')

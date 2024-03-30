@@ -58,11 +58,12 @@
                 "-l",
                 "pt",
                 "-i",
-                "./assets/input/chat_example.txt",
+                "./assets/input/chat_example_v2.txt",
                 "-o",
                 "./assets/output",
                 "-d",
-                "08/05/2023"
+                "01/01/2024",
+                "-e"
             ]
         }
     ]
