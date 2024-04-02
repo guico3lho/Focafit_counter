@@ -21,13 +21,13 @@
             "console": "integratedTerminal",
             "args": [
                 "-l",
-                "en",
+                "pt",
                 "-i",
-                "./assets/input/chat_focafit_17_03_24.txt",
+                "./assets/input/chat_focafit_25_03_24.txt",
                 "-o",
                 "./assets/output",
                 "-d",
-                "10/07/2023",
+                "25/03/2024",
                 "-t"
             ]
         },

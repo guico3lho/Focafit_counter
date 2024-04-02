@@ -90,26 +90,23 @@ def create_rankings(messages_from_date_interval: List) -> Tuple[Dict, Dict]:
     """
 
     nucleos_and_points = {}
-    name_and_points = {}
 
+    name_and_points = {}
     nucleo_pattern = re.compile(r'#(noe|nip|nut|bope|ndp|pres|trainees)', re.IGNORECASE)  # ex: #noe, #NUT
     points_pattern = re.compile(r'([\+|\-]\d+)')  # ex: +2, -10
     name_pattern = re.compile(r'([A-ZÁÉÍÓÚ][a-záéíóú ]+)+')
 
     # message = '10/05/2023 17:02 - Chico: Chico +2 #NOE'
     for message in messages_from_date_interval:
-
         # Pega o corpo da mensagem (que inicia depois dos dois pontos)
-
-        # message without date and time
-        message_body = "".join(message.split(':')[2:]).strip()  # NOTE: pq não por [-1]?
-        # message_body = 'Vitor Ramos, Junior +4'
+        # message without date and time        
+        message_body = "".join(message.split(':')[-1]).strip()  # NOTE: pq não por [-1]?
         nucleo_match = nucleo_pattern.search(message_body)  # ex: #noe
         points_match = points_pattern.search(message_body)  # ex: +2, -10
         name_match = name_pattern.search(message_body)
         if points_match:
             if nucleo_match:
-                nucleo = nucleo_match.group(1).lower()
+                nucleo  = nucleo_match.group(1).lower()
                 points = points_match.group(1)
                 assign_points_ranking_nucleo(nucleos_and_points, nucleo, points)
             if name_match:
@@ -189,7 +186,7 @@ def get_capitalized_name(cleaned_message: str):
     capitalized_words = re.findall(
         r'\b[A-Z][a-zA-Z]+\b', cleaned_message)  # ex: Chico Buarque
     name = ' '.join(capitalized_words)
-
+    # brbrbrb #NUT Gui +2
     return name
 
 
